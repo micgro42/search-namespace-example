@@ -1,5 +1,5 @@
 <script setup>
-import { CdxLookup } from '@wikimedia/codex';
+import { CdxLookup, CdxSelect } from '@wikimedia/codex';
 import { ref } from 'vue';
 const options = [
   {
@@ -117,8 +117,8 @@ async function onLoadMore() {
 const menuConfig = {
   visibleItemLimit: 6,
 };
-function onNamespaceChange(event) {
-  const namespaceOption = options.find((option) => option.value === event.target.value);
+function onNamespaceChange(newNamespace) {
+  const namespaceOption = options.find((option) => option.value === newNamespace);
   const allShortcuts = options.map((option) => option.shortcut);
   if (allShortcuts.includes(searchInput.value.substring(0, 2))) {
     searchInput.value = namespaceOption.shortcut + searchInput.value.substring(2);
@@ -136,26 +136,26 @@ function onSelectionChange(entityId) {
 </script>
 
 <template>
-  <div>
-    <select v-model="namespace" @change="onNamespaceChange">
-      <option v-for="option in options" :key="option.value" :value="option.value">
-        {{ option.label }}
-      </option>
-    </select>
-    <div>
-      <cdx-lookup
-        v-model="searchInput"
-        v-model:selected="selection"
-        @update:selected="onSelectionChange"
-        :menu-items="menuItems"
-        :menu-config="menuConfig"
-        @input="onInput"
-        @load-more="onLoadMore"
-        placeholder="Search Wikidata"
-      >
-        <template #no-results> No results found. </template>
-      </cdx-lookup>
-    </div>
+  <div class="namespace-demo">
+    <cdx-select
+      class="select"
+      :menu-items="options"
+      v-model:selected="namespace"
+      @update:selected="onNamespaceChange"
+    />
+    <cdx-lookup
+      class="lookup"
+      v-model="searchInput"
+      v-model:selected="selection"
+      @update:selected="onSelectionChange"
+      :menu-items="menuItems"
+      :menu-config="menuConfig"
+      @input="onInput"
+      @load-more="onLoadMore"
+      placeholder="Search Wikidata"
+    >
+      <template #no-results> No results found. </template>
+    </cdx-lookup>
   </div>
 </template>
 
